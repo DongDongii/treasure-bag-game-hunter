@@ -1,0 +1,150 @@
+// ... existing code ... <现有方法实现>
+
+  // Social Contacts
+  async getSocialContacts(): Promise<SocialContact[]> {
+    try {
+      const { data, error } = await supabase
+        .from('social_contacts')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+
+      if (error) {
+        console.error('Error fetching social contacts:', error)
+        return []
+      }
+
+      return data.map(contact => ({
+        id: contact.id,
+        platform: contact.platform,
+        username: contact.username,
+        url: contact.url,
+        is_active: contact.is_active,
+        sort_order: contact.sort_order,
+        created_at: contact.created_at,
+        updated_at: contact.updated_at
+      }))
+    } catch (error) {
+      console.error('Error in getSocialContacts:', error)
+      return []
+    }
+  }
+
+  async getSocialContact(id: string): Promise<SocialContact | null> {
+    try {
+      const { data, error } = await supabase
+        .from('social_contacts')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) {
+        if (error.code === 'PGRST116') return null
+        console.error('Error fetching social contact:', error)
+        return null
+      }
+
+      return {
+        id: data.id,
+        platform: data.platform,
+        username: data.username,
+        url: data.url,
+        is_active: data.is_active,
+        sort_order: data.sort_order,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      }
+    } catch (error) {
+      console.error('Error in getSocialContact:', error)
+      return null
+    }
+  }
+
+  async createSocialContact(contactData: Omit<SocialContact, 'id' | 'created_at' | 'updated_at'>): Promise<SocialContact> {
+    try {
+      const { data, error } = await supabase
+        .from('social_contacts')
+        .insert({
+          platform: contactData.platform,
+          username: contactData.username,
+          url: contactData.url,
+          is_active: contactData.is_active,
+          sort_order: contactData.sort_order
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error creating social contact:', error)
+        throw error
+      }
+
+      return {
+        id: data.id,
+        platform: data.platform,
+        username: data.username,
+        url: data.url,
+        is_active: data.is_active,
+        sort_order: data.sort_order,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      }
+    } catch (error) {
+      console.error('Error in createSocialContact:', error)
+      throw error
+    }
+  }
+
+  async updateSocialContact(id: string, contactData: Partial<SocialContact>): Promise<SocialContact> {
+    try {
+      const { data, error } = await supabase
+        .from('social_contacts')
+        .update({
+          ...(contactData.platform && { platform: contactData.platform }),
+          ...(contactData.username && { username: contactData.username }),
+          ...(contactData.url && { url: contactData.url }),
+          ...(contactData.is_active !== undefined && { is_active: contactData.is_active }),
+          ...(contactData.sort_order !== undefined && { sort_order: contactData.sort_order })
+        })
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error updating social contact:', error)
+        throw error
+      }
+
+      return {
+        id: data.id,
+        platform: data.platform,
+        username: data.username,
+        url: data.url,
+        is_active: data.is_active,
+        sort_order: data.sort_order,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      }
+    } catch (error) {
+      console.error('Error in updateSocialContact:', error)
+      throw error
+    }
+  }
+
+  async deleteSocialContact(id: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('social_contacts')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        console.error('Error deleting social contact:', error)
+        throw error
+      }
+    } catch (error) {
+      console.error('Error in deleteSocialContact:', error)
+      throw error
+    }
+  }
+}

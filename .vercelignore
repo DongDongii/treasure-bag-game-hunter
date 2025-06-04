@@ -1,0 +1,33 @@
+# Development files
+.env.local.example
+.env.example
+
+# Documentation
+*.md
+!README.md
+
+# Development tools
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store
+*.tgz
+*.tar.gz
+
+# Local database files
+*.db
+*.sqlite
+
+# Backup files
+*.backup
